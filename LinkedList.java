@@ -1,3 +1,7 @@
+
+import java.lang.classfile.components.ClassPrinter;
+import org.w3c.dom.traversal.NodeIterator;
+
 /**
  * Represents a list of Nodes. 
  */
@@ -54,8 +58,15 @@ public class LinkedList {
 			throw new IllegalArgumentException(
 					"index must be between 0 and size");
 		}
-		//// Replace the following statement with your code
-		return null;
+		int where = 0;
+		Node tNode = first;
+		while (where < index)
+		{
+			tNode = tNode.next;
+			where++;
+
+		}
+		return tNode;
 	}
 	
 	/**
@@ -78,8 +89,29 @@ public class LinkedList {
 	 *         if index is negative or greater than the list's size
 	 */
 	public void add(int index, MemoryBlock block) {
-		//// Write your code here
+		if (index < 0 || index > size) {
+			throw new IllegalArgumentException("index must be between 0 and size");
+		}
+	
+		Node newNode = new Node(block); // יצירת Node חדש עם ה- MemoryBlock
+	
+		if (index == 0) {
+			newNode.next = first;
+			first = newNode;
+		} else {
+			int where = 0;
+			Node current = first;
+			while (where < index - 1) {
+				current = current.next;
+				where++;
+			}
+			newNode.next = current.next;
+			current.next = newNode;
+		}
+		
+		size++; 
 	}
+	
 
 	/**
 	 * Creates a new node that points to the given memory block, and adds it
@@ -89,7 +121,17 @@ public class LinkedList {
 	 *        the given memory block
 	 */
 	public void addLast(MemoryBlock block) {
-		//// Write your code here
+		Node newNode = new Node(block); 
+	
+		if (first == null) {
+			first = newNode;
+			last = newNode;
+		} else {
+			last.next = newNode;
+			last = newNode; 
+		}
+	
+		size++; 
 	}
 	
 	/**
@@ -100,8 +142,18 @@ public class LinkedList {
 	 *        the given memory block
 	 */
 	public void addFirst(MemoryBlock block) {
-		//// Write your code here
-	}
+			Node newNode = new Node(block); 
+		
+			if (first == null) {
+				first = newNode;
+				last = newNode;
+			} else {
+				newNode.next = first;
+				first = newNode;
+			}
+		
+			size++; 
+		}
 
 	/**
 	 * Gets the memory block located at the given index in this list.
@@ -113,8 +165,18 @@ public class LinkedList {
 	 *         if index is negative or greater than or equal to size
 	 */
 	public MemoryBlock getBlock(int index) {
-		//// Replace the following statement with your code
-		return null;
+		if (index < 0 || index >= size) { 
+			throw new IllegalArgumentException("Index must be between 0 and size - 1");
+		}
+		int where = 0; 
+		Node toreturNode = first;
+		while (where < index)
+		{
+			where ++;
+			toreturNode = toreturNode.next;
+		}
+		MemoryBlock nBlock = toreturNode.block;
+		return nBlock;
 	}	
 
 	/**
