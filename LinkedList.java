@@ -1,7 +1,4 @@
 
-import java.lang.classfile.components.ClassPrinter;
-import org.w3c.dom.traversal.NodeIterator;
-
 /**
  * Represents a list of Nodes. 
  */
@@ -92,10 +89,14 @@ public class LinkedList {
 		if (index < 0 || index > size) {
 			throw new IllegalArgumentException("index must be between 0 and size");
 		}
-	
-		Node newNode = new Node(block); // יצירת Node חדש עם ה- MemoryBlock
-	
-		if (index == 0) {
+		Node newNode = new Node(block);
+		if (size == 0) {
+			first = newNode;
+			last = newNode;
+		} else if (index == size) {
+			last.next = newNode;
+			last = newNode; // עדכון של last
+		} else if (index == 0) {
 			newNode.next = first;
 			first = newNode;
 		} else {
@@ -108,8 +109,8 @@ public class LinkedList {
 			newNode.next = current.next;
 			current.next = newNode;
 		}
-		
-		size++; 
+	
+		size++;
 	}
 	
 
@@ -166,7 +167,7 @@ public class LinkedList {
 	 */
 	public MemoryBlock getBlock(int index) {
 		if (index < 0 || index >= size) { 
-			throw new IllegalArgumentException("Index must be between 0 and size - 1");
+			throw new IllegalArgumentException("index must be between 0 and size");
 		}
 		int where = 0; 
 		Node toreturNode = first;
@@ -187,8 +188,19 @@ public class LinkedList {
 	 * @return the index of the block, or -1 if the block is not in this list
 	 */
 	public int indexOf(MemoryBlock block) {
-		//// Replace the following statement with your code
-		return -1;
+		int where = 0;
+		Node nodetoreturn = first;
+		while (where < size)
+		{
+			if (nodetoreturn.block == block)
+			{
+				return where;
+			}
+			where ++;
+			nodetoreturn = nodetoreturn.next;
+
+		}
+			return -1;
 	}
 
 	/**
@@ -198,19 +210,76 @@ public class LinkedList {
 	 *        the node that will be removed from this list
 	 */
 	public void remove(Node node) {
-		//// Write your code here
+		if (first == null) {
+			throw new IllegalArgumentException(" NullPointerException!");
+		}
+	
+		if (first == node) {
+			first = first.next;
+			if (first == null) {
+				last = null;  
+			}
+			size--;
+			return;
+		}
+	
+		Node currNode = first;
+		while (currNode != null && currNode.next != null) {
+			if (currNode.next == node) {
+				if (currNode.next.next == null) {
+					currNode.next = null;
+					last = currNode;
+				} else {
+					currNode.next = currNode.next.next;
+				}
+				size--;
+				return;
+			}
+			currNode = currNode.next;
+		}
+		throw new IllegalArgumentException("Node not found in the list");
 	}
-
 	/**
 	 * Removes from this list the node which is located at the given index.
 	 * 
 	 * @param index the location of the node that has to be removed.
 	 * @throws IllegalArgumentException
 	 *         if index is negative or greater than or equal to size
-	 */
+	 */	
 	public void remove(int index) {
-		//// Write your code here
+		if (index < 0 || index >= size) {
+			throw new IllegalArgumentException("index must be between 0 and size-1");
+		}
+	
+		if (index == 0) {
+			first = first.next;
+			if (first == null) {
+				last = null;  
+			}
+			size--;
+			return;
+		}
+	
+		int where = 0;
+		Node currNode = first;
+		while (currNode != null && currNode.next != null) {
+			if (where == index - 1) {
+				if (currNode.next.next == null) {
+					currNode.next = null;
+					last = currNode;
+				} else {
+					currNode.next = currNode.next.next;
+				}
+				size--;
+				return;
+			}
+			currNode = currNode.next;
+			where++;
+		}
+	
+		throw new IllegalArgumentException("Index out of range");
 	}
+	
 
 	/**
 	 * Removes from this list the node pointing to the given memory block.
@@ -220,7 +289,8 @@ public class LinkedList {
 	 *         if the given memory block is not in this list
 	 */
 	public void remove(MemoryBlock block) {
-		//// Write your code here
+		remove(indexOf(block));
+
 	}	
 
 	/**
@@ -234,7 +304,14 @@ public class LinkedList {
 	 * A textual representation of this list, for debugging.
 	 */
 	public String toString() {
-		//// Replace the following statement with your code
-		return "";
+		String str = "";
+		Node current = first;
+		while (current.next != null)
+		{
+			str = str + current.block.toString() + " ";
+			current = current.next;
+		}
+
+		return str;
 	}
 }
