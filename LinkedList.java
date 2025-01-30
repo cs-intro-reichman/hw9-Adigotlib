@@ -306,12 +306,17 @@ public class LinkedList {
 	public String toString() {
 		String str = "";
 		Node current = first;
-		while (current.next != null)
-		{
+		
+		if (current == null) {
+			return "List is empty.";
+		}
+	
+		while (current != null) {
 			str = str + current.block.toString() + " ";
 			current = current.next;
 		}
-
+	
 		return str;
 	}
+	
 }
