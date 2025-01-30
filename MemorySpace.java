@@ -58,9 +58,37 @@ public class MemorySpace {
 	 * @return the base address of the allocated block, or -1 if unable to allocate
 	 */
 	public int malloc(int length) {		
-		//// Replace the following statement with your code
-		return -1;
+
+		ListIterator iterator = new ListIterator(freeList.getFirst());
+
+		while (iterator.hasNext()) {
+			MemoryBlock blockIterator = iterator.current.block;
+			if (blockIterator.length >= length) { 
+				
+				int Address = blockIterator.baseAddress;
+				MemoryBlock allocatedBlock = new MemoryBlock(Address, length);
+				
+				
+				allocatedList.addLast(allocatedBlock);
+			  
+				if (blockIterator.length == length) {
+					freeList.remove(blockIterator);
+				} else {
+					
+					blockIterator.baseAddress += length;
+					blockIterator.length -=length;
+				}
+			  
+			  
+				return Address; 
+			}
+			
+			iterator.next();
+		}
+		
+		return -1; 
 	}
+		
 
 	/**
 	 * Frees the memory block whose base address equals the given address.
@@ -71,23 +99,84 @@ public class MemorySpace {
 	 *            the starting address of the block to freeList
 	 */
 	public void free(int address) {
-		//// Write your code here
-	}
-	
-	/**
-	 * A textual representation of the free list and the allocated list of this memory space, 
-	 * for debugging purposes.
-	 */
-	public String toString() {
-		return freeList.toString() + "\n" + allocatedList.toString();		
-	}
-	
-	/**
-	 * Performs defragmantation of this memory space.
-	 * Normally, called by malloc, when it fails to find a memory block of the requested size.
-	 * In this implementation Malloc does not call defrag.
-	 */
-	public void defrag() {
-		//// Write your code here
-	}
+		if (allocatedList.getSize() == 0){
+            throw new IllegalArgumentException ("index must be between 0 and size");
+        }
+        
+        Node current = allocatedList.getFirst();
+        
+        while (current != null) {
+
+            MemoryBlock Blocks = current.block;
+            if (Blocks.baseAddress == address) {
+                
+                allocatedList.remove(current);
+    
+                
+                freeList.addLast(Blocks);
+    
+                return; 
+            }
+            current = current.next; 
+        }
+    }
+    
+    /**
+     * A textual representation of the free list and the allocated list of this memory space, 
+     * for debugging purposes.
+     */
+        @Override
+    public String toString() {
+
+        return freeList.toString() + "\n" + allocatedList.toString();  
+     
+    }
+    
+    /**
+     * Performs defragmantation of this memory space.
+     * Normally, called by malloc, when it fails to find a memory block of the requested size.
+     * In this implementation Malloc does not call defrag.
+     */
+    public void defrag() {
+        
+        if (freeList.getFirst() == null) return;
+    
+        ListIterator iterator = new ListIterator(freeList.getFirst());
+    
+        while (iterator.hasNext()) {
+
+            MemoryBlock blockNum1 = iterator.current.block;
+    
+            ListIterator iterator2 = new ListIterator(freeList.getFirst());
+    
+            while (iterator2.hasNext()) {
+
+                MemoryBlock blockNum2 = iterator2.current.block;
+    
+                if (blockNum1 != blockNum2) { 
+                  
+                    if (blockNum1.baseAddress + blockNum1.length == blockNum2.baseAddress) {
+                        blockNum1.length += blockNum2.length; 
+                        freeList.remove(iterator2.current); 
+                        iterator2 = new ListIterator(freeList.getFirst()); 
+                    }
+                    else if (blockNum2.baseAddress + blockNum2.length == blockNum1.baseAddress) {
+                        blockNum2.length += blockNum1.length; 
+                        freeList.remove(iterator.current); 
+                        iterator = new ListIterator(freeList.getFirst()); 
+
+                        break; 
+                    }
+                }
+    
+                iterator2.next(); 
+            }
+    
+            iterator.next(); 
+        }
+    
+      
+    }
+    
 }
+
